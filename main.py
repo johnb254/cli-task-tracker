@@ -13,6 +13,8 @@ def add_task(description: str):
     except json.JSONDecodeError:
         print("No data in file")
         tasks = []
+    finally:
+        file.close()
     
     with open("data.json", "w") as file:
         task_id = 1
@@ -28,10 +30,44 @@ def add_task(description: str):
         json.dump(tasks, file)
         print("Task added successfully (ID: ", task_id, ")")
             
+def find(list: list, value: int):
+    for i, dict in enumerate(list):
+        print ("", i, "", dict, "",type(dict['id']), "", type(value))
+        if int(dict['id']) == int(value):
+            return i
+    return -1
 
 def update_task_des(id: int, description: str):
-    print("placeholder")
-    #TODO
+    tasks: list[dict] = []
+    try:
+        file = open("data.json", "r")
+        tasks = json.load(file)
+    except FileNotFoundError:
+        print("No data file found.")
+        return
+    except json.JSONDecodeError:
+        print("No data in file")
+        return
+    finally:
+        file.close()
+    
+    if len(tasks) == 0:
+        return
+    
+    target = find(tasks, id)
+
+    if target == -1:
+        print("Data not found")
+        return
+    
+    tasks[target].update({
+            "description" : description,
+            "updatedAt" : datetime.now().strftime("%H:%M:%S %m-%d-%Y"),
+        })
+    with open("data.json", "w") as file:
+        json.dump(tasks, file)
+        print("Successfully updated description")
+            
 
 def update_task_status(id: int, status: str):
     print("placeholder")
