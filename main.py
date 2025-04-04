@@ -81,8 +81,22 @@ def update_task_status(id: int, status: str):
         print("Successfully updated status")
 
 def delete_task(id: int):
-    print("placeholder")
-    #TODO
+    tasks: list[dict] = read_data_file()
+    
+    if len (tasks) == 0:
+        return
+    
+    target = find(tasks, id)
+    
+    if target == -1:
+        print("Data not found")
+        return
+    
+    tasks.pop(target)
+    
+    with open("data.json", "w") as file:
+        json.dump(tasks, file)
+        print("Successfully deleted task")
 
 def list_tasks(options = "all"):
     print("placeholder")
