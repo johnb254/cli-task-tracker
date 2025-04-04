@@ -59,7 +59,6 @@ def update_task_des(id: int, description: str):
         json.dump(tasks, file)
         print("Successfully updated description")
             
-
 def update_task_status(id: int, status: str):
     tasks: list[dict] = read_data_file()
     
@@ -99,8 +98,15 @@ def delete_task(id: int):
         print("Successfully deleted task")
 
 def list_tasks(options = "all"):
-    print("placeholder")
-    #TODO
+    tasks: list[dict] = read_data_file()
+    
+    if len (tasks) == 0:
+        return
+    
+    for task in tasks:
+        if options == "all" or task["status"] == options:
+            print(task["description"])
+    
 
 def main():
     arg_len = len(sys.argv)
@@ -121,7 +127,7 @@ def main():
     elif arg_len == 3 and command == "mark-done":
         update_task_status(sys.argv[2], "done")
     elif command == "list":
-        if arg_len > 2:
+        if arg_len == 2:
             list_tasks()
         else:
             list_tasks(sys.argv[2])
