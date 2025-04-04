@@ -2,19 +2,21 @@ import sys
 import json
 from datetime import datetime
 
-def add_task(description: str):
-    tasks = []
+def read_data_file():
     try:
         file = open("data.json", "r")
         tasks = json.load(file)
+        file.close()
+        return tasks
     except FileNotFoundError:
         print("No data file found.")
-        tasks = []
     except json.JSONDecodeError:
-        print("No data in file")
-        tasks = []
-    finally:
         file.close()
+        print("No data in file")
+    return []
+
+def add_task(description: str):
+    tasks: list[dict] = read_data_file()
     
     with open("data.json", "w") as file:
         task_id = 1
@@ -32,24 +34,13 @@ def add_task(description: str):
             
 def find(list: list, value: int):
     for i, dict in enumerate(list):
-        print ("", i, "", dict, "",type(dict['id']), "", type(value))
+        #print ("", i, "", dict, "",type(dict['id']), "", type(value))
         if int(dict['id']) == int(value):
             return i
     return -1
 
 def update_task_des(id: int, description: str):
-    tasks: list[dict] = []
-    try:
-        file = open("data.json", "r")
-        tasks = json.load(file)
-    except FileNotFoundError:
-        print("No data file found.")
-        return
-    except json.JSONDecodeError:
-        print("No data in file")
-        return
-    finally:
-        file.close()
+    tasks: list[dict] = read_data_file()
     
     if len(tasks) == 0:
         return
@@ -70,7 +61,24 @@ def update_task_des(id: int, description: str):
             
 
 def update_task_status(id: int, status: str):
-    print("placeholder")
+    tasks: list[dict] = read_data_file()
+    
+    if len (tasks) == 0:
+        return
+    
+    target = find(tasks, id)
+    
+    if target == -1:
+        print("Data not found")
+        return
+    
+    tasks[target].update({
+        "status" : status,
+        "updatedAt" : datetime.now().strftime("%H:%M:%S %m-%d-%Y"),
+    })
+    with open("data.json", "w") as file:
+        json.dump(tasks, file)
+        print("Successfully updated status")
 
 def delete_task(id: int):
     print("placeholder")
